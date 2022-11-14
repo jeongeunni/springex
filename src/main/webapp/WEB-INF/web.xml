@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+<!--        contextconfig 정보 위치 -->
+        <param-value>/WEB-INF/root-context.xml</param-value>
+<!--        두가지 빈을 등록한 root-context.xml 위치-->
+    </context-param>
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+<!--    톰캣을 실행하면 스프링과 관련된 로그가 기록되면서 실행됨을 확인할 수 있다.
+        톰캣과 스프링컨테이너 연동 구조 완성-->
+
+
+    <servlet>
+        <servlet-name>appServlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <!-- init-param: 초기화 할때 환경정보 불러와라-->
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>/WEB-INF/servlet-context.xml</param-value>
+        </init-param>
+        <init-param>
+            <param-name>throwExceptionIfNoHandlerFound</param-name>
+            <param-value>true</param-value>
+        </init-param>
+
+        <!--load-on-startup: 톰캣이 시작될때 초기화 시켜서 객체로 올려라 / 1: 톰캣 로딩 시 클래스 미리 로딩해 놓으라는 의미-->
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>appServlet</servlet-name>
+        <!-- / : 모든 경로 요청 다 받겠다-->
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+</web-app>
