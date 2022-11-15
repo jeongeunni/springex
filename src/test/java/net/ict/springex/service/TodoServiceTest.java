@@ -26,6 +26,23 @@ public class TodoServiceTest {
                 .build();
         todoService.register(todoDTO);
     }
+    @Test
+    public void testRemove(){
+        Long tno = 4L;
+        todoService.remove(tno);
+    }
+
+    @Test
+    public void testModify(){
+        TodoDTO todoDTO = TodoDTO.builder()
+                .tno(6L)
+                .title("MODIFY 수정중...")
+                .writer("윤쩡")
+                .dueDate(LocalDate.of(2022,12,8))
+                .finished(true)
+                .build();
+        todoService.modify(todoDTO);
+    }
 
 
 }

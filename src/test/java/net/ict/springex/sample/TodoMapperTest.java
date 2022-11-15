@@ -1,5 +1,6 @@
 package net.ict.springex.sample;
 
+import com.sun.tools.javac.comp.Todo;
 import lombok.extern.log4j.Log4j2;
 import net.ict.springex.domain.TodoVO;
 import net.ict.springex.mapper.TodoMapper;
@@ -10,6 +11,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Log4j2
 @ExtendWith(SpringExtension.class)
@@ -27,6 +29,34 @@ public class TodoMapperTest {
     public void testInsert(){
         TodoVO todoVO = TodoVO.builder().title("spring test").dueDate(LocalDate.of(2022,11,14)).writer("ict05").build();
         todoMapper.insert(todoVO);
+    }
+
+    @Test
+    public void testSelectALL(){
+        List<TodoVO> voList = todoMapper.selectAll();
+        voList.forEach(vo->log.info(vo));
+    }
+
+    @Test
+    public void testDelete(){
+        Long tno = 3L;
+        todoMapper.delete(tno);
+    }
+    @Test
+    public void testSelectOne(){
+       TodoVO vo = todoMapper.selectOne(1L);
+        System.out.println(vo);
+    }
+
+    @Test
+    public void testUpdate(){
+        TodoVO todoVO = TodoVO.builder().title("스프링 수정11")
+                .tno(1L)
+                .dueDate(LocalDate.of(2022,12,12))
+                .writer("정은")
+                .finished(true)
+                .build();
+        todoMapper.update(todoVO);
     }
 
 
