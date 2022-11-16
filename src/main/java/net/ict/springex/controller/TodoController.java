@@ -2,6 +2,7 @@ package net.ict.springex.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import net.ict.springex.dto.PageRequestDTO;
 import net.ict.springex.dto.TodoDTO;
 import net.ict.springex.service.TodoService;
 import org.springframework.stereotype.Controller;
@@ -23,12 +24,23 @@ import javax.validation.Valid;
         private final TodoService todoService;
 
     //최종경로는 /todo/list
-        @RequestMapping("/list")
-        public void list(Model model){
+//        @RequestMapping("/list")
+//        public void list(Model model){
+//            log.info("todo list..............");
+//            model.addAttribute("dtoList",todoService.getAll());
+//            //model에는 dtoList이름을 가진 목록 데이터가 담겨 있다
+//        }
+
+            @RequestMapping("/list")
+            public void list(@Valid PageRequestDTO pageRequestDTO, BindingResult bindingResult, Model model){
             log.info("todo list..............");
-            model.addAttribute("dtoList",todoService.getAll());
+            if(bindingResult.hasErrors()){
+                pageRequestDTO=PageRequestDTO.builder().build();
+            }
+            model.addAttribute("responseDTO",todoService.getList(pageRequestDTO));
             //model에는 dtoList이름을 가진 목록 데이터가 담겨 있다
         }
+
         //최종경로는 /todo/register
         @RequestMapping(value = "/register", method = RequestMethod.GET)
         public void register(){
@@ -72,6 +84,7 @@ import javax.validation.Valid;
                 log.info("--- has errors---");
                 redirectAttributes.addFlashAttribute("errors",bindingResult.getAllErrors());
                 redirectAttributes.addAttribute("tno",todoDTO.getTno());
+                //tno를 받아오는 이유는 오류가 발생할 경우 tno값을 가지고 이전 화면으로 돌아가야 하기때문
                 return "redirect:/todo/modify";
             }
             log.info(todoDTO);

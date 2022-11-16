@@ -4,6 +4,8 @@ import com.sun.org.apache.xpath.internal.operations.Mod;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.ict.springex.domain.TodoVO;
+import net.ict.springex.dto.PageRequestDTO;
+import net.ict.springex.dto.PageResponseDTO;
 import net.ict.springex.dto.TodoDTO;
 import net.ict.springex.mapper.TodoMapper;
 import org.modelmapper.ModelMapper;
@@ -31,16 +33,32 @@ public class TodoServiceImpl implements TodoService{ //todoService 구현체
     }
 
     @Override
-    public List<TodoDTO> getAll() {
-        List<TodoDTO> dtoList = todoMapper.selectAll().stream()  //stream: 빌더와 비슷한 역할
-                .map(vo -> modelMapper.map(vo,TodoDTO.class))   //내가 원하는 todoVo는 modelmapper 를 통해 dto로 바뀜
-                .collect(Collectors.toList()); //vo의 행들을 collect를 통해서 리스트를 하나의 묶음체(테이블)로 만들어줌
-        return dtoList;
+    public PageResponseDTO<TodoDTO> getList(PageRequestDTO pageRequestDTO) {
+        List<TodoVO> voList = todoMapper.selectList(pageRequestDTO);
+        List<TodoDTO> dtoList = voList.stream()
+                .map(vo->modelMapper.map(vo,TodoDTO.class))
+                .collect(Collectors.toList());
+        int total = todoMapper.getCount(pageRequestDTO);
 
-        /*List<TodoVO>를 List<TodoDTO>로 변환하는 작업을 stream을 이용하여
-        * 각 TodoVo는 map() 을 통해 TodoDTO로 바꾸고 collect()을 이용하여 List<TodoDTO>로 묶어준다.
-        */
+        PageResponseDTO<TodoDTO> pageResponseDTO = PageResponseDTO.<TodoDTO>withAll()
+                .dtoList(dtoList)
+                .total(total)
+                .pageRequestDTO(pageRequestDTO)
+                .build();
+        return pageResponseDTO;
     }
+
+//    @Override
+//    public List<TodoDTO> getAll() {
+//        List<TodoDTO> dtoList = todoMapper.selectAll().stream()  //stream: 빌더와 비슷한 역할
+//                .map(vo -> modelMapper.map(vo,TodoDTO.class))   //내가 원하는 todoVo는 modelmapper 를 통해 dto로 바뀜
+//                .collect(Collectors.toList()); //vo의 행들을 collect를 통해서 리스트를 하나의 묶음체(테이블)로 만들어줌
+//        return dtoList;
+//
+//        /*List<TodoVO>를 List<TodoDTO>로 변환하는 작업을 stream을 이용하여
+//        * 각 TodoVo는 map() 을 통해 TodoDTO로 바꾸고 collect()을 이용하여 List<TodoDTO>로 묶어준다.
+//        */
+//    }
 
     @Override
     public void remove(Long tno) {
