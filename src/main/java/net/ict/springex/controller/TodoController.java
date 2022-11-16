@@ -71,7 +71,7 @@ import javax.validation.Valid;
             return "redirect:/todo/list";
         }
         @RequestMapping({"/read","/modify"})
-        public void read(Long tno, Model model){
+        public void read(PageRequestDTO pageRequestDTO,Long tno, Model model){
             log.info("read...");
             TodoDTO todoDTO = todoService.getOne(tno);
             log.info(todoDTO);

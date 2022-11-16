@@ -11,6 +11,10 @@ import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Positive;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.time.LocalDate;
+import java.util.Arrays;
 
 //dto에 필요한 어노테이션
 @Builder
@@ -18,6 +22,14 @@ import javax.validation.constraints.Positive;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PageRequestDTO {
+
+    private String[] types;
+    private String keyword;
+    private boolean finished;
+    private LocalDate from;
+    private LocalDate to;
+
+
     @Builder.Default //여기서 빌더 패턴을 통해 인스턴스를 만들 때 특정 필드를 특정 값으로 초기화하고 싶다면 @Builder.Default를 쓰면 된다.
     @Min(value = 1)
     @Positive //양수만 처리
@@ -32,10 +44,43 @@ public class PageRequestDTO {
     public int getSkip(){
         return (page-1) *10;
     }
-    private String link;
+
+    public boolean checkType(String type){
+        if(types ==null || type.length()==0){
+            return false;
+        }
+        return Arrays.stream(types).anyMatch(type::equals);
+    }
+
     public String getLink(){
+        StringBuilder builder = new StringBuilder();
 
+        builder.append("page=" + this.page);
+        builder.append("&size=" + this.size);
 
-        return link;
+        if (finished){
+            builder.append("&finished=on");
+        }
+        if (types != null && types.length > 0){
+            for (int i = 0; i < types.length; i++){
+                builder.append("&types=" + types[i]);
+            }
+        }
+        if (keyword != null){
+            try {
+                builder.append("&keyword=" + URLEncoder.encode(keyword, "UTF-8"));
+            }catch (UnsupportedEncodingException e){
+                e.printStackTrace();
+            }
+        }
+        if(from != null){
+            builder.append("&from=" + from.toString());
+        }
+        if(to != null){
+            builder.append("&to=" + to.toString());
+        }
+
+        return builder.toString();
+
     }
 }
